@@ -1,12 +1,16 @@
-import { 
-  LayoutDashboard, 
-  Receipt, 
-  UtensilsCrossed, 
-  BarChart3, 
-  Settings, 
+  import {
+  LayoutDashboard,
+  Receipt,
+  UtensilsCrossed,
+  BarChart3,
+  Settings,
   LogOut,
-  ChefHat
-} from 'lucide-react';
+  ChefHat,
+  Building2,       // add this
+} from "lucide-react";
+
+  
+  from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
