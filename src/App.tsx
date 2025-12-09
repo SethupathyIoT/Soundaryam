@@ -57,6 +57,40 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          {/* COMPANIES */}
+<Route
+  path="/companies"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <CompaniesPage />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/companies/:companyId/employees"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <CompanyEmployeesPage />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/employees/:employeeId/account"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <EmployeeAccountPage />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+
 
           {/* Billing */}
           <Route
