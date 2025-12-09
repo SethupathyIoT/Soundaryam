@@ -11,6 +11,11 @@ import Menu from "./pages/Menu";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+// src/App.tsx
+import CompaniesPage from "./pages/Companies";
+import CompanyEmployeesPage from "./pages/CompanyEmployees";
+import EmployeeAccountPage from "./pages/EmployeeAccount";
+
 
 import ResetMenuPage from "./pages/reset-menu"; // <--- IMPORTANT
 
