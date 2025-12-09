@@ -75,7 +75,7 @@ async function getCompaniesDB() {
           store.createIndex("by-createdAt", "createdAt", { unique: false });
         }
 
-        // Meta (for counters etc.)
+        // Meta (unused now but kept safely)
         if (!db.objectStoreNames.contains("meta")) {
           db.createObjectStore("meta", { keyPath: "key" });
         }
@@ -86,31 +86,11 @@ async function getCompaniesDB() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                           HELPER: UUID + COUNTER                           */
+/*                                 HELPERS                                    */
 /* -------------------------------------------------------------------------- */
 
 function createUUID() {
   return crypto.randomUUID();
-}
-
-async function getAndIncrementEmployeeCounter(): Promise<number> {
-  const db = await getCompaniesDB();
-  const tx = db.transaction("meta", "readwrite");
-  const store = tx.objectStore("meta");
-
-  const current = await store.get("employeeCounter");
-  let value = 1;
-  if (current && typeof current.value === "number") {
-    value = current.value + 1;
-  }
-
-  await store.put({ key: "employeeCounter", value });
-  await tx.done;
-  return value;
-}
-
-function formatEmployeeCode(counter: number): string {
-  return `EMP-${counter.toString().padStart(5, "0")}`;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -150,14 +130,29 @@ export async function createEmployee(input: {
   companyId: string;
   name: string;
   phone?: string;
+  employeeCode: string; // MANUAL ENTRY REQUIRED
 }): Promise<Employee> {
   const db = await getCompaniesDB();
-  const counter = await getAndIncrementEmployeeCounter();
-  const employeeCode = formatEmployeeCode(counter);
 
+  // 1) Validate employee code
+  if (!input.employeeCode || !input.employeeCode.trim()) {
+    throw new Error("Employee ID is required.");
+  }
+
+  // 2) Prevent duplicates
+  const existing = await db.getFromIndex(
+    "employees",
+    "by-employeeCode",
+    input.employeeCode.trim()
+  );
+  if (existing) {
+    throw new Error("Employee ID already exists, choose another.");
+  }
+
+  // 3) Store employee
   const employee: Employee = {
     id: createUUID(),
-    employeeCode,
+    employeeCode: input.employeeCode.trim(),
     companyId: input.companyId,
     name: input.name.trim(),
     phone: input.phone?.trim() || "",
@@ -200,8 +195,7 @@ export async function addEmployeeTransaction(input: {
 }): Promise<EmployeeTransaction> {
   const db = await getCompaniesDB();
 
-  // Always store positive amount, we decide sign in accounting logic
-  const amount = Math.abs(input.amount);
+  const amount = Math.abs(input.amount); // always positive
 
   const tx = db.transaction(["employees", "employeeTransactions"], "readwrite");
   const employeeStore = tx.objectStore("employees");
@@ -212,7 +206,7 @@ export async function addEmployeeTransaction(input: {
     throw new Error("Employee not found");
   }
 
-  // Update balance according to type
+  // Increase or decrease balance safely
   if (input.type === "BILL") {
     employee.activeBalance += amount;
   } else if (input.type === "PAYMENT") {
@@ -246,7 +240,6 @@ export async function getEmployeeTransactions(
 
   const all = await index.getAll(employeeId);
 
-  // Sort by createdAt ascending for proper ledger
   return all.sort((a, b) =>
     a.createdAt.localeCompare(b.createdAt)
   );
