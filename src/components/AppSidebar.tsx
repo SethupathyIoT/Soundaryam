@@ -1,16 +1,13 @@
-  import {
+import {
   LayoutDashboard,
   Receipt,
   UtensilsCrossed,
   BarChart3,
   Settings,
   LogOut,
-  ChefHat,
-  Building2,       // add this
+  Building2,
 } from "lucide-react";
 
-  
-  from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -75,6 +72,8 @@ export function AppSidebar() {
           {!isCollapsed && <SidebarGroupLabel>Menu</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
+
+              {/* Existing Items */}
               {filteredItems.map((item) => {
                 const isActive = currentPath === item.url;
                 return (
@@ -88,6 +87,20 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                 );
               })}
+
+              {/* NEW COMPANIES ITEM */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={currentPath === "/companies"}
+                >
+                  <NavLink to="/companies" className="flex items-center gap-3">
+                    <Building2 className="h-5 w-5" />
+                    {!isCollapsed && <span>Companies</span>}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
