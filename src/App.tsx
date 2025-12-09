@@ -11,17 +11,19 @@ import Menu from "./pages/Menu";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-// src/App.tsx
+
 import CompaniesPage from "./pages/Companies";
 import CompanyEmployeesPage from "./pages/CompanyEmployees";
 import EmployeeAccountPage from "./pages/EmployeeAccount";
 
-
-import ResetMenuPage from "./pages/reset-menu"; // <--- IMPORTANT
+import ResetMenuPage from "./pages/reset-menu";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/Layout";
 import { isAuthenticated } from "./lib/auth";
+
+// ⭐ NEW — IMPORT FOOD BILLING PAGE (FIXES WHITE SCREEN)
+import EmployeeFoodBilling from "./pages/EmployeeFoodBilling";
 
 const queryClient = new QueryClient();
 
@@ -57,40 +59,40 @@ const App = () => (
               </ProtectedRoute>
             }
           />
-          {/* COMPANIES */}
-<Route
-  path="/companies"
-  element={
-    <ProtectedRoute>
-      <Layout>
-        <CompaniesPage />
-      </Layout>
-    </ProtectedRoute>
-  }
-/>
 
-<Route
-  path="/companies/:companyId/employees"
-  element={
-    <ProtectedRoute>
-      <Layout>
-        <CompanyEmployeesPage />
-      </Layout>
-    </ProtectedRoute>
-  }
-/>
+          {/* Companies */}
+          <Route
+            path="/companies"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <CompaniesPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
 
-<Route
-  path="/employees/:employeeId/account"
-  element={
-    <ProtectedRoute>
-      <Layout>
-        <EmployeeAccountPage />
-      </Layout>
-    </ProtectedRoute>
-  }
-/>
+          <Route
+            path="/companies/:companyId/employees"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <CompanyEmployeesPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
 
+          <Route
+            path="/employees/:employeeId/account"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <EmployeeAccountPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
 
           {/* Billing */}
           <Route
@@ -108,7 +110,7 @@ const App = () => (
           <Route
             path="/menu"
             element={
-              <ProtectedRoute roles={['admin']}>
+              <ProtectedRoute roles={["admin"]}>
                 <Layout>
                   <Menu />
                 </Layout>
@@ -132,30 +134,31 @@ const App = () => (
           <Route
             path="/settings"
             element={
-              <ProtectedRoute roles={['admin']}>
+              <ProtectedRoute roles={["admin"]}>
                 <Layout>
                   <Settings />
                 </Layout>
               </ProtectedRoute>
             }
           />
+
+          {/* ⭐ NEW — EMPLOYEE FOOD BILLING */}
           <Route
-  path="/employees/:employeeId/food"
-  element={
-    <ProtectedRoute>
-      <Layout>
-        <EmployeeFoodBilling />
-      </Layout>
-    </ProtectedRoute>
-  }
-/>
+            path="/employees/:employeeId/food"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <EmployeeFoodBilling />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
 
-
-          {/* ✅ RESET MENU PAGE (NEW ROUTE) */}
+          {/* RESET MENU */}
           <Route
             path="/reset-menu"
             element={
-              <ProtectedRoute roles={['admin']}>
+              <ProtectedRoute roles={["admin"]}>
                 <ResetMenuPage />
               </ProtectedRoute>
             }
