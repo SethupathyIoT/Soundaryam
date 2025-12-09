@@ -139,6 +139,17 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          <Route
+  path="/employees/:employeeId/food"
+  element={
+    <ProtectedRoute>
+      <Layout>
+        <EmployeeFoodBilling />
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+
 
           {/* ✅ RESET MENU PAGE (NEW ROUTE) */}
           <Route
