@@ -18,6 +18,8 @@ import { ArrowLeft, Plus, IndianRupee, Wallet, Eye } from "lucide-react";
 export default function CompanyEmployeesPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const navigate = useNavigate();
+  const [newEmployeeCode, setNewEmployeeCode] = useState("");
+
 
   const [company, setCompany] = useState<Company | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
