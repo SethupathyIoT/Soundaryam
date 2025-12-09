@@ -18,8 +18,6 @@ import { ArrowLeft, Plus, IndianRupee, Wallet, Eye } from "lucide-react";
 export default function CompanyEmployeesPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const navigate = useNavigate();
-  const [newEmployeeCode, setNewEmployeeCode] = useState("");
-
 
   const [company, setCompany] = useState<Company | null>(null);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -28,6 +26,7 @@ export default function CompanyEmployeesPage() {
   // New employee form
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
+  const [newEmployeeCode, setNewEmployeeCode] = useState("");   // MANUAL EMPLOYEE ID
 
   // Payment dialog
   const [payOpen, setPayOpen] = useState(false);
@@ -49,16 +48,20 @@ export default function CompanyEmployeesPage() {
   }, [companyId]);
 
   const handleAddEmployee = async () => {
-    if (!companyId || !newName.trim()) return;
+    if (!companyId || !newName.trim() || !newEmployeeCode.trim()) return;
     setLoading(true);
     try {
       await createEmployee({
         companyId,
         name: newName,
         phone: newPhone,
+        employeeCode: newEmployeeCode,   // REQUIRED MANUAL ID
       });
+
       setNewName("");
       setNewPhone("");
+      setNewEmployeeCode("");
+
       await loadData();
     } finally {
       setLoading(false);
@@ -191,6 +194,17 @@ export default function CompanyEmployeesPage() {
             {/* Add employee */}
             <div className="space-y-3">
               <h3 className="font-semibold text-sm">Add Employee</h3>
+
+              {/* MANUAL EMPLOYEE ID */}
+              <div className="space-y-2">
+                <Label>Employee ID</Label>
+                <Input
+                  value={newEmployeeCode}
+                  onChange={(e) => setNewEmployeeCode(e.target.value)}
+                  placeholder="Enter employee ID (e.g. EMP-123 or STAFF-01)"
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label>Name</Label>
                 <Input
@@ -199,6 +213,7 @@ export default function CompanyEmployeesPage() {
                   placeholder="Employee name"
                 />
               </div>
+
               <div className="space-y-2">
                 <Label>Phone (optional)</Label>
                 <Input
@@ -207,10 +222,11 @@ export default function CompanyEmployeesPage() {
                   placeholder="Phone"
                 />
               </div>
+
               <Button
                 className="w-full"
                 onClick={handleAddEmployee}
-                disabled={!newName.trim() || loading}
+                disabled={!newName.trim() || !newEmployeeCode.trim() || loading}
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add Employee
