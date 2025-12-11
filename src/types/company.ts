@@ -26,4 +26,10 @@ export interface EmployeeTransaction {
   amount: number;                 // always positive; sign decided by type
   description?: string;
   createdAt: string;
+
+    paymentMethod?: string;
+  collectorName?: string;
+  paymentDate?: string;
+  paymentTime?: string;
 }
+
