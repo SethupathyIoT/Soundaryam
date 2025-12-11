@@ -75,7 +75,7 @@ async function getCompaniesDB() {
           store.createIndex("by-createdAt", "createdAt", { unique: false });
         }
 
-        // Meta (unused now but kept safely)
+        // Meta
         if (!db.objectStoreNames.contains("meta")) {
           db.createObjectStore("meta", { keyPath: "key" });
         }
@@ -130,26 +130,23 @@ export async function createEmployee(input: {
   companyId: string;
   name: string;
   phone?: string;
-  employeeCode: string; // MANUAL ENTRY REQUIRED
+  employeeCode: string;
 }): Promise<Employee> {
   const db = await getCompaniesDB();
 
-  // 1) Validate employee code
   if (!input.employeeCode || !input.employeeCode.trim()) {
     throw new Error("Employee ID is required.");
   }
 
-  // 2) Prevent duplicates
   const existing = await db.getFromIndex(
     "employees",
     "by-employeeCode",
     input.employeeCode.trim()
   );
   if (existing) {
-    throw new Error("Employee ID already exists, choose another.");
+    throw new Error("Employee ID already exists.");
   }
 
-  // 3) Store employee
   const employee: Employee = {
     id: createUUID(),
     employeeCode: input.employeeCode.trim(),
@@ -192,10 +189,17 @@ export async function addEmployeeTransaction(input: {
   type: EmployeeTransactionType;
   amount: number;
   description?: string;
+
+  // NEW FIELDS
+  paymentMethod?: string;
+  collectorName?: string;
+  paymentDate?: string;
+  paymentTime?: string;
+
 }): Promise<EmployeeTransaction> {
   const db = await getCompaniesDB();
 
-  const amount = Math.abs(input.amount); // always positive
+  const amount = Math.abs(input.amount);
 
   const tx = db.transaction(["employees", "employeeTransactions"], "readwrite");
   const employeeStore = tx.objectStore("employees");
@@ -206,7 +210,6 @@ export async function addEmployeeTransaction(input: {
     throw new Error("Employee not found");
   }
 
-  // Increase or decrease balance safely
   if (input.type === "BILL") {
     employee.activeBalance += amount;
   } else if (input.type === "PAYMENT") {
@@ -220,6 +223,12 @@ export async function addEmployeeTransaction(input: {
     amount,
     description: input.description?.trim() || "",
     createdAt: new Date().toISOString(),
+
+    // NEW FIELDS SAVED
+    paymentMethod: input.paymentMethod || "",
+    collectorName: input.collectorName || "",
+    paymentDate: input.paymentDate || "",
+    paymentTime: input.paymentTime || "",
   };
 
   await employeeStore.put(employee);
@@ -240,9 +249,7 @@ export async function getEmployeeTransactions(
 
   const all = await index.getAll(employeeId);
 
-  return all.sort((a, b) =>
-    a.createdAt.localeCompare(b.createdAt)
-  );
+  return all.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
 
 /* -------------------------------------------------------------------------- */
